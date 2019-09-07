@@ -20,8 +20,6 @@ public final class GetAccountHandler implements Handler {
     public void handle(@NotNull final Context ctx) {
         var id = ctx.pathParam("id", UUID.class).get();
 
-        var account = accountService.findById(id);
-
-        ctx.json(new GetAccountResponseDto().setId(account.getId()).setBalance(0L));
+        ctx.json(GetAccountResponseDto.of(accountService.findById(id)));
     }
 }
