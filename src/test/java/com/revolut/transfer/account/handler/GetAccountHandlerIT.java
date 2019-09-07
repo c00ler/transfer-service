@@ -21,14 +21,14 @@ class GetAccountHandlerIT extends AbstractIT {
     private final AccountRepository accountRepository = new AccountRepository(JOOQ);
 
     @Test
-    void shouldReturn400IfAccountNotFound() {
+    void shouldReturn404IfAccountNotFound() {
         given().accept(ContentType.JSON)
                 .get("accounts/{id}", UUID.randomUUID())
                 .then()
                 .log().all()
-                .statusCode(HttpStatus.BAD_REQUEST_400)
-                .body("status", equalTo(400))
-                .body("title", equalTo("Bad Request"));
+                .statusCode(HttpStatus.NOT_FOUND_404)
+                .body("status", equalTo(404))
+                .body("title", equalTo("Not Found"));
     }
 
     @Test

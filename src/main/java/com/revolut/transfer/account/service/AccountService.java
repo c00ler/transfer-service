@@ -29,6 +29,6 @@ public final class AccountService {
 
     public Account findById(final UUID id) {
         return accountRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Account id=%s not found", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("account id=%s not found", id)));
     }
 }
