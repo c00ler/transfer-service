@@ -13,7 +13,10 @@ public final class Launcher {
         FlywayUtils.migrate(dataSource);
 
         // TODO: Make port configurable
-        new Application(dataSource, 8080).start();
+        var app = new Application(dataSource, 8080);
+        app.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(app::stop, "ShutdownHook"));
     }
 
 }
