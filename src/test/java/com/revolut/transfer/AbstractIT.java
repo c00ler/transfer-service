@@ -39,7 +39,7 @@ public abstract class AbstractIT {
     }
 
     @AfterAll
-    static void stopServer() {
+    static void stopApplication() {
         if (application != null) {
             application.stop();
         }

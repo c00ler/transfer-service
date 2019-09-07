@@ -65,5 +65,4 @@ final class Application {
                         .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
                         .registerModule(new ProblemModule()));
     }
-
 }

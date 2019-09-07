@@ -3,7 +3,9 @@ package com.revolut.transfer.account.repository;
 import com.revolut.transfer.account.model.Account;
 import com.revolut.transfer.persistence.jooq.Tables;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +26,17 @@ public final class AccountRepository {
     public Optional<Account> findById(final UUID id) {
         return jooq.selectFrom(Tables.ACCOUNT)
                 .where(Tables.ACCOUNT.ID.eq(id))
-                .fetchOptional(r -> new Account(r.getId()));
+                .fetchOptional(r -> {
+                    var accountId = r.getId();
+
+                    // Balance query optimisation is not a port of the task
+                    var balance =
+                            jooq.select(DSL.coalesce(DSL.sum(Tables.TRANSACTION.AMOUNT), BigDecimal.ZERO))
+                                    .from(Tables.TRANSACTION)
+                                    .where(Tables.TRANSACTION.ACCOUNT_ID.eq(accountId))
+                                    .fetchOneInto(Long.class);
+
+                    return new Account(accountId, balance);
+                });
     }
 }

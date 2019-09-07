@@ -32,15 +32,16 @@ class GetAccountHandlerIT extends AbstractIT {
     }
 
     @Test
-    void shouldReturnAccount() {
+    void shouldReturnAccountWithoutTransactions() {
         var id = UUID.randomUUID();
-        assertThat(accountRepository.insert(new Account(id))).isEqualTo(1);
+        assertThat(accountRepository.insert(Account.of(id))).isEqualTo(1);
 
         given().accept(ContentType.JSON)
                 .get("accounts/{id}", id)
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.OK_200)
-                .body("id", equalTo(id.toString())); // TODO: check balance
+                .body("id", equalTo(id.toString()))
+                .body("balance", equalTo(0));
     }
 }

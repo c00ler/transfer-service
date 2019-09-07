@@ -18,5 +18,4 @@ public final class Launcher {
 
         Runtime.getRuntime().addShutdownHook(new Thread(app::stop, "ShutdownHook"));
     }
-
 }

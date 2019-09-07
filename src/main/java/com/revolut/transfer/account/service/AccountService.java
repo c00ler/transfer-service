@@ -19,7 +19,7 @@ public final class AccountService {
     }
 
     public Account createAccount() {
-        var account = new Account(UUID.randomUUID());
+        var account = Account.of(UUID.randomUUID());
 
         accountRepository.insert(account);
         LOG.info("New account id={} successfully created", account.getId());

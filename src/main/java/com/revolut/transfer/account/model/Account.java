@@ -8,4 +8,10 @@ import java.util.UUID;
 public final class Account {
 
     UUID id;
+
+    Long balance;
+
+    public static Account of(final UUID id) {
+        return new Account(id, 0L);
+    }
 }
