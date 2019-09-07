@@ -17,16 +17,21 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <lombok.version>1.18.8</lombok.version>
         <jackson-bom.version>2.9.9.20190807</jackson-bom.version>
         <javalin.version>3.4.1</javalin.version>
         <log4j.version>2.12.1</log4j.version>
         <problem.version>0.23.0</problem.version>
+        <h2.version>1.4.199</h2.version>
+        <flyway.version>6.0.1</flyway.version>
+        <jooq.version>3.12.1</jooq.version>
 
         <!-- Test dependencies -->
         <junit-jupiter.version>5.5.1</junit-jupiter.version>
         <assertj.version>3.11.1</assertj.version>
+        <rest-assured.version>4.1.1</rest-assured.version>
     </properties>
 
     <dependencyManagement>
@@ -92,6 +97,30 @@
             <version>${problem.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -103,6 +132,13 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -123,6 +159,11 @@
                     <version>3.0.0-M2</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.1.0</version>
@@ -140,6 +181,11 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.22.2</version>
                 </plugin>
                 <plugin>
@@ -185,6 +231,38 @@
             </plugin>
 
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-jooq-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/jooq</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -211,4 +289,102 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jooq-generate</id>
+
+            <properties>
+                <db.url>jdbc:h2:~/revolut</db.url>
+                <db.username>sa</db.username>
+            </properties>
+
+            <build>
+                <defaultGoal>generate-sources</defaultGoal>
+
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.flywaydb</groupId>
+                            <artifactId>flyway-maven-plugin</artifactId>
+                            <version>${flyway.version}</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.jooq</groupId>
+                            <artifactId>jooq-codegen-maven</artifactId>
+                            <version>${jooq.version}</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+
+                <plugins>
+                    <plugin>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-maven-plugin</artifactId>
+                        <configuration>
+                            <url>${db.url}</url>
+                            <user>${db.username}</user>
+                            <locations>
+                                <location>filesystem:/${basedir}/src/main/resources/db/migration</location>
+                            </locations>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-database</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>migrate-database</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>migrate</goal>
+                                    <goal>validate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-codegen-maven</artifactId>
+                        <configuration>
+                            <jdbc>
+                                <url>${db.url}</url>
+                                <user>${db.username}</user>
+                            </jdbc>
+                            <generator>
+                                <generate>
+                                    <routines>false</routines>
+                                    <pojos>false</pojos>
+                                    <fluentSetters>true</fluentSetters>
+                                    <javaTimeTypes>true</javaTimeTypes>
+                                </generate>
+                                <database>
+                                    <inputSchema>PUBLIC</inputSchema>
+                                    <includes>
+                                        account
+                                    </includes>
+                                </database>
+                                <target>
+                                    <packageName>com.revolut.transfer.persistence.jooq</packageName>
+                                    <directory>src/main/jooq</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -6,10 +6,14 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.revolut.transfer" level="info" additivity="false">
+        <Logger name="com.revolut.transfer" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="org.jooq.Constants" level="off"/>
+        <!-- Log database queries -->
+        <Logger name="org.jooq.tools.LoggerListener" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
