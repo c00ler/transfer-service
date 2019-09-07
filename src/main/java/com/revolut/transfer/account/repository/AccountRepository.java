@@ -29,7 +29,7 @@ public final class AccountRepository {
                 .fetchOptional(r -> {
                     var accountId = r.getId();
 
-                    // Balance query optimisation is not a port of the task
+                    // Balance query optimisation is not in the scope of the task
                     var balance =
                             jooq.select(DSL.coalesce(DSL.sum(Tables.TRANSACTION.AMOUNT), BigDecimal.ZERO))
                                     .from(Tables.TRANSACTION)
