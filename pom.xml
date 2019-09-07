@@ -366,6 +366,7 @@
                                     <inputSchema>PUBLIC</inputSchema>
                                     <includes>
                                         account
+                                        | transaction
                                     </includes>
                                 </database>
                                 <target>

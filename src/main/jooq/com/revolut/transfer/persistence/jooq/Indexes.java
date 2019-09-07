@@ -5,6 +5,7 @@ package com.revolut.transfer.persistence.jooq;
 
 
 import com.revolut.transfer.persistence.jooq.tables.Account;
+import com.revolut.transfer.persistence.jooq.tables.Transaction;
 
 import javax.annotation.processing.Generated;
 
@@ -31,6 +32,8 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     public static final Index PRIMARY_KEY_E = Indexes0.PRIMARY_KEY_E;
+    public static final Index FK_TRANSACTION_ACCOUNT_ID_INDEX_F = Indexes0.FK_TRANSACTION_ACCOUNT_ID_INDEX_F;
+    public static final Index PRIMARY_KEY_F = Indexes0.PRIMARY_KEY_F;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -38,5 +41,7 @@ public class Indexes {
 
     private static class Indexes0 {
         public static Index PRIMARY_KEY_E = Internal.createIndex("PRIMARY_KEY_E", Account.ACCOUNT, new OrderField[] { Account.ACCOUNT.ID }, true);
+        public static Index FK_TRANSACTION_ACCOUNT_ID_INDEX_F = Internal.createIndex("FK_TRANSACTION_ACCOUNT_ID_INDEX_F", Transaction.TRANSACTION, new OrderField[] { Transaction.TRANSACTION.ACCOUNT_ID }, false);
+        public static Index PRIMARY_KEY_F = Internal.createIndex("PRIMARY_KEY_F", Transaction.TRANSACTION, new OrderField[] { Transaction.TRANSACTION.ID }, true);
     }
 }

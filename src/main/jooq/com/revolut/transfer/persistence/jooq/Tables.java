@@ -5,6 +5,7 @@ package com.revolut.transfer.persistence.jooq;
 
 
 import com.revolut.transfer.persistence.jooq.tables.Account;
+import com.revolut.transfer.persistence.jooq.tables.Transaction;
 
 import javax.annotation.processing.Generated;
 
@@ -26,4 +27,9 @@ public class Tables {
      * The table <code>PUBLIC.ACCOUNT</code>.
      */
     public static final Account ACCOUNT = Account.ACCOUNT;
+
+    /**
+     * The table <code>PUBLIC.TRANSACTION</code>.
+     */
+    public static final Transaction TRANSACTION = Transaction.TRANSACTION;
 }

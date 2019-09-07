@@ -5,6 +5,7 @@ package com.revolut.transfer.persistence.jooq;
 
 
 import com.revolut.transfer.persistence.jooq.tables.Account;
+import com.revolut.transfer.persistence.jooq.tables.Transaction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = -1924225320;
+    private static final long serialVersionUID = -863275846;
 
     /**
      * The reference instance of <code>PUBLIC</code>
@@ -41,6 +42,11 @@ public class Public extends SchemaImpl {
      * The table <code>PUBLIC.ACCOUNT</code>.
      */
     public final Account ACCOUNT = com.revolut.transfer.persistence.jooq.tables.Account.ACCOUNT;
+
+    /**
+     * The table <code>PUBLIC.TRANSACTION</code>.
+     */
+    public final Transaction TRANSACTION = com.revolut.transfer.persistence.jooq.tables.Transaction.TRANSACTION;
 
     /**
      * No further instances allowed
@@ -64,6 +70,7 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
-            Account.ACCOUNT);
+            Account.ACCOUNT,
+            Transaction.TRANSACTION);
     }
 }
