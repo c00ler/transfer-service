@@ -147,6 +147,11 @@
                     <artifactId>maven-install-plugin</artifactId>
                     <version>2.5.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -169,6 +174,32 @@
                             </rules>
                             <failFast>true</failFast>
                             <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.revolut.transfer.Launcher</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Multi-Release>true</Multi-Release>
+                                </manifestEntries>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
                         </configuration>
                     </execution>
                 </executions>
