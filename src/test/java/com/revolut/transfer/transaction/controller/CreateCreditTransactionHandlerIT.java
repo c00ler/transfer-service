@@ -1,8 +1,9 @@
-package com.revolut.transfer.transaction.handler;
+package com.revolut.transfer.transaction.controller;
 
 import com.revolut.transfer.AbstractIT;
 import com.revolut.transfer.account.model.Account;
 import com.revolut.transfer.account.repository.AccountRepository;
+import com.revolut.transfer.transaction.repository.TransactionRepository;
 import io.restassured.http.ContentType;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Nested;
@@ -22,21 +23,23 @@ class CreateCreditTransactionHandlerIT extends AbstractIT {
 
     private final AccountRepository accountRepository = new AccountRepository(JOOQ);
 
+    private final TransactionRepository transactionRepository = new TransactionRepository(JOOQ);
+
     // By default a new instance of a class is created for each test, so each test gets a new accountId
     private final UUID accountId = UUID.randomUUID();
 
     @Test
     void shouldCreateCreditTransaction() {
-        accountRepository.insert(Account.of(accountId));
+        accountRepository.persist(Account.of(accountId));
 
         given().contentType(ContentType.JSON)
                 .body(String.format("{\"amount\": 10000, \"id\": \"%s\"}", UUID.randomUUID()))
                 .post("/accounts/{id}/credit-transactions", accountId)
                 .then()
                 .log().all()
-                .statusCode(HttpStatus.CREATED_201);
+                .statusCode(HttpStatus.OK_200);
 
-        assertThat(accountRepository.findById(accountId).map(Account::getBalance)).hasValue(100_00L);
+        assertThat(transactionRepository.getBalance(accountId)).isEqualTo(100_00L);
     }
 
     @Nested

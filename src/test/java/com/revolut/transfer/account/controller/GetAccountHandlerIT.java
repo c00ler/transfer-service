@@ -1,4 +1,4 @@
-package com.revolut.transfer.account.handler;
+package com.revolut.transfer.account.controller;
 
 import com.revolut.transfer.AbstractIT;
 import com.revolut.transfer.account.model.Account;
@@ -10,7 +10,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
-import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +50,7 @@ class GetAccountHandlerIT extends AbstractIT {
     @Test
     void shouldReturnAccountWithoutBalance() {
         var id = UUID.randomUUID();
-        assertThat(accountRepository.insert(Account.of(id))).isEqualTo(1);
+        assertThat(accountRepository.persist(Account.of(id))).isEqualTo(1);
 
         given().accept(ContentType.JSON)
                 .get("accounts/{id}", id)
@@ -65,11 +64,11 @@ class GetAccountHandlerIT extends AbstractIT {
     @Test
     void shouldReturnAccountWithBalance() {
         var accountId = UUID.randomUUID();
-        assertThat(accountRepository.insert(Account.of(accountId))).isEqualTo(1);
+        assertThat(accountRepository.persist(Account.of(accountId))).isEqualTo(1);
 
-        // Amounts
-        LongStream.of(100_00L, 200_00L, -50_00L)
-                .forEach(a -> transactionRepository.insert(new Transaction(UUID.randomUUID(), accountId, a)));
+        transactionRepository.createCreditTransaction(new Transaction.Credit(UUID.randomUUID(), accountId, 100_00L));
+        transactionRepository.createCreditTransaction(new Transaction.Credit(UUID.randomUUID(), accountId, 200_00L));
+        transactionRepository.createDebitTransaction(new Transaction.Debit(UUID.randomUUID(), accountId, -50_00L));
 
         given().accept(ContentType.JSON)
                 .get("accounts/{id}", accountId)

@@ -1,4 +1,4 @@
-package com.revolut.transfer.account.handler;
+package com.revolut.transfer.account.controller;
 
 import com.revolut.transfer.AbstractIT;
 import com.revolut.transfer.Application;

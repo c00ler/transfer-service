@@ -6,6 +6,7 @@ package com.revolut.transfer.persistence.jooq;
 
 import com.revolut.transfer.persistence.jooq.tables.Account;
 import com.revolut.transfer.persistence.jooq.tables.Transaction;
+import com.revolut.transfer.persistence.jooq.tables.Transfer;
 
 import javax.annotation.processing.Generated;
 
@@ -34,6 +35,11 @@ public class Indexes {
     public static final Index PRIMARY_KEY_E = Indexes0.PRIMARY_KEY_E;
     public static final Index FK_TRANSACTION_ACCOUNT_ID_INDEX_F = Indexes0.FK_TRANSACTION_ACCOUNT_ID_INDEX_F;
     public static final Index PRIMARY_KEY_F = Indexes0.PRIMARY_KEY_F;
+    public static final Index FK_TRANSFER_SOURCE_ACCOUNT_ID_INDEX_7 = Indexes0.FK_TRANSFER_SOURCE_ACCOUNT_ID_INDEX_7;
+    public static final Index FK_TRANSFER_TARGET_ACCOUNT_ID_INDEX_7 = Indexes0.FK_TRANSFER_TARGET_ACCOUNT_ID_INDEX_7;
+    public static final Index KEY_TRANSFER_CREDIT_TRANSACTION_ID = Indexes0.KEY_TRANSFER_CREDIT_TRANSACTION_ID;
+    public static final Index KEY_TRANSFER_DEBIT_TRANSACTION_ID = Indexes0.KEY_TRANSFER_DEBIT_TRANSACTION_ID;
+    public static final Index PRIMARY_KEY_7 = Indexes0.PRIMARY_KEY_7;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -43,5 +49,10 @@ public class Indexes {
         public static Index PRIMARY_KEY_E = Internal.createIndex("PRIMARY_KEY_E", Account.ACCOUNT, new OrderField[] { Account.ACCOUNT.ID }, true);
         public static Index FK_TRANSACTION_ACCOUNT_ID_INDEX_F = Internal.createIndex("FK_TRANSACTION_ACCOUNT_ID_INDEX_F", Transaction.TRANSACTION, new OrderField[] { Transaction.TRANSACTION.ACCOUNT_ID }, false);
         public static Index PRIMARY_KEY_F = Internal.createIndex("PRIMARY_KEY_F", Transaction.TRANSACTION, new OrderField[] { Transaction.TRANSACTION.ID }, true);
+        public static Index FK_TRANSFER_SOURCE_ACCOUNT_ID_INDEX_7 = Internal.createIndex("FK_TRANSFER_SOURCE_ACCOUNT_ID_INDEX_7", Transfer.TRANSFER, new OrderField[] { Transfer.TRANSFER.SOURCE_ACCOUNT_ID }, false);
+        public static Index FK_TRANSFER_TARGET_ACCOUNT_ID_INDEX_7 = Internal.createIndex("FK_TRANSFER_TARGET_ACCOUNT_ID_INDEX_7", Transfer.TRANSFER, new OrderField[] { Transfer.TRANSFER.TARGET_ACCOUNT_ID }, false);
+        public static Index KEY_TRANSFER_CREDIT_TRANSACTION_ID = Internal.createIndex("KEY_TRANSFER_CREDIT_TRANSACTION_ID", Transfer.TRANSFER, new OrderField[] { Transfer.TRANSFER.CREDIT_TRANSACTION_ID }, true);
+        public static Index KEY_TRANSFER_DEBIT_TRANSACTION_ID = Internal.createIndex("KEY_TRANSFER_DEBIT_TRANSACTION_ID", Transfer.TRANSFER, new OrderField[] { Transfer.TRANSFER.DEBIT_TRANSACTION_ID }, true);
+        public static Index PRIMARY_KEY_7 = Internal.createIndex("PRIMARY_KEY_7", Transfer.TRANSFER, new OrderField[] { Transfer.TRANSFER.ID }, true);
     }
 }

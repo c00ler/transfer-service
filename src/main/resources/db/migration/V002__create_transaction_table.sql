@@ -1,3 +1,4 @@
+-- This table contains immutable list of transactions for an account. It is used to calculate the balance.
 CREATE TABLE transaction
 (
     id         UUID   NOT NULL,

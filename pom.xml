@@ -374,7 +374,15 @@
                                     <includes>
                                         account
                                         | transaction
+                                        | transfer
                                     </includes>
+                                    <forcedTypes>
+                                        <forcedType>
+                                            <userType>com.revolut.transfer.transaction.model.TransferState</userType>
+                                            <enumConverter>true</enumConverter>
+                                            <expression>.*\.state</expression>
+                                        </forcedType>
+                                    </forcedTypes>
                                 </database>
                                 <target>
                                     <packageName>com.revolut.transfer.persistence.jooq</packageName>

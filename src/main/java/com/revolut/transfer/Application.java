@@ -3,13 +3,16 @@ package com.revolut.transfer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revolut.transfer.account.handler.CreateAccountHandler;
-import com.revolut.transfer.account.handler.GetAccountHandler;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.revolut.transfer.account.controller.CreateAccountHandler;
+import com.revolut.transfer.account.controller.GetAccountHandler;
 import com.revolut.transfer.account.repository.AccountRepository;
 import com.revolut.transfer.account.service.AccountService;
 import com.revolut.transfer.exception.NotFoundException;
-import com.revolut.transfer.transaction.handler.CreateCreditTransactionHandler;
+import com.revolut.transfer.transaction.controller.CreateCreditTransactionHandler;
+import com.revolut.transfer.transaction.controller.CreateTransferHandler;
 import com.revolut.transfer.transaction.repository.TransactionRepository;
+import com.revolut.transfer.transaction.service.TransactionService;
 import io.javalin.Javalin;
 import io.javalin.core.validation.JavalinValidation;
 import io.javalin.plugin.json.JavalinJackson;
@@ -47,12 +50,18 @@ public final class Application {
 
         app.exception(NotFoundException.class, new NotFoundException.Handler());
 
-        var accountService = new AccountService(new AccountRepository(jooq), new TransactionRepository(jooq));
+        // Create and wire all the dependencies.
+        var accountRepository = new AccountRepository(jooq);
+        var transactionRepository = new TransactionRepository(jooq);
+
+        var accountService = new AccountService(accountRepository, transactionRepository);
+        var transactionService = new TransactionService(transactionRepository);
 
         app.post("/accounts", new CreateAccountHandler(accountService));
         app.get("/accounts/:id", new GetAccountHandler(accountService));
-
-        app.post("/accounts/:id/credit-transactions", new CreateCreditTransactionHandler(accountService));
+        app.post("/accounts/:id/credit-transactions",
+                new CreateCreditTransactionHandler(accountService, transactionService));
+        app.post("/transfers", new CreateTransferHandler(accountService, transactionService));
 
         app.start(port);
     }
@@ -68,6 +77,7 @@ public final class Application {
         JavalinJackson.configure(
                 new ObjectMapper()
                         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
                         .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
                         .registerModule(new ProblemModule()));
     }
