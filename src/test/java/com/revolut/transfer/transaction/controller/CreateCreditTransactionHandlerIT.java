@@ -42,6 +42,28 @@ class CreateCreditTransactionHandlerIT extends AbstractIT {
         assertThat(transactionRepository.getBalance(accountId)).isEqualTo(100_00L);
     }
 
+    @Test
+    void shouldReturn409IfUsingExistingTransactionId() {
+        accountRepository.persist(Account.of(accountId));
+
+        var requestBody = String.format("{\"amount\": 10000, \"id\": \"%s\"}", UUID.randomUUID());
+        given().contentType(ContentType.JSON)
+                .body(requestBody)
+                .post("/accounts/{id}/credit-transactions", accountId)
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.OK_200);
+
+        given().contentType(ContentType.JSON)
+                .body(requestBody)
+                .post("/accounts/{id}/credit-transactions", accountId)
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.CONFLICT_409)
+                .body("status", equalTo(409))
+                .body("title", equalTo("Conflict"));
+    }
+
     @Nested
     class Validation {
 

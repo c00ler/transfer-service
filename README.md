@@ -187,7 +187,7 @@ Date: Sun, 08 Sep 2019 21:04:21 GMT
 Server: Javalin
 ```
 
-After a transfer is completed, new balances can be observed by querying the account information endpoint:
+After a successful transfer, new balances can be observed by querying the account information endpoint:
 
 ```shell script
 http --verbose :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62

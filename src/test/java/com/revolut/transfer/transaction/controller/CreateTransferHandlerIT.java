@@ -55,6 +55,37 @@ class CreateTransferHandlerIT extends AbstractIT {
         assertThat(transactionRepository.getBalance(targetAccountId)).isEqualTo(300_00L);
     }
 
+    @Test
+    void shouldReturn409IfUsingExistingTransferId() {
+        accountRepository.persist(Account.of(sourceAccountId));
+        transactionRepository.createCreditTransaction(
+                new Transaction.Credit(UUID.randomUUID(), sourceAccountId, 300_00L));
+
+        accountRepository.persist(Account.of(targetAccountId));
+        transactionRepository.createCreditTransaction(
+                new Transaction.Credit(UUID.randomUUID(), targetAccountId, 200_00L));
+
+        var requestBody = String.format(
+                "{\"id\": \"%s\", \"source_account_id\": \"%s\", \"target_account_id\": \"%s\", \"amount\": 10000}",
+                UUID.randomUUID(), sourceAccountId, targetAccountId);
+
+        given().contentType(ContentType.JSON)
+                .body(requestBody)
+                .post("/transfers")
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.OK_200);
+
+        given().contentType(ContentType.JSON)
+                .body(requestBody)
+                .post("/transfers")
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.CONFLICT_409)
+                .body("status", equalTo(409))
+                .body("title", equalTo("Conflict"));
+    }
+
     @Nested
     class Validation {
 
