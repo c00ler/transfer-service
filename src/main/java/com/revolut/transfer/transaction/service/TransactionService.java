@@ -32,6 +32,8 @@ public final class TransactionService {
     /**
      * Transfers money between source and target accounts. Transfer id must be provided from the outside to make it
      * idempotent.
+     * <p>
+     * Recovery from the failures is outside of the scope of the task.
      *
      * @param transferId    transfer id
      * @param sourceAccount account to debit
