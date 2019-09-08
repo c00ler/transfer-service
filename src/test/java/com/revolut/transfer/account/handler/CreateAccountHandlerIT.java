@@ -1,6 +1,7 @@
 package com.revolut.transfer.account.handler;
 
 import com.revolut.transfer.AbstractIT;
+import com.revolut.transfer.Application;
 import com.revolut.transfer.account.repository.AccountRepository;
 import io.restassured.http.ContentType;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,8 @@ class CreateAccountHandlerIT extends AbstractIT {
                         .log().all()
                         .statusCode(HttpStatus.CREATED_201)
                         .extract().header(HttpHeader.LOCATION.asString());
+
+        assertThat(location).startsWith(Application.CONTEXT_PATH);
 
         var id = UUID.fromString(StringUtils.substringAfterLast(location, "/"));
         assertThat(accountRepository.findById(id)).isPresent();

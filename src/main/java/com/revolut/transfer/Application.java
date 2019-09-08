@@ -21,7 +21,9 @@ import org.zalando.problem.ProblemModule;
 import javax.sql.DataSource;
 import java.util.UUID;
 
-final class Application {
+public final class Application {
+
+    public static final String CONTEXT_PATH = "/api/v1";
 
     private Javalin app;
 
@@ -39,7 +41,7 @@ final class Application {
 
         app = Javalin.create(config -> {
             config.showJavalinBanner = false;
-            config.contextPath = "/api/v1";
+            config.contextPath = CONTEXT_PATH;
             config.defaultContentType = "application/json";
         });
 

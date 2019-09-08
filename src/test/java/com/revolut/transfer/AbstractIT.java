@@ -33,7 +33,7 @@ public abstract class AbstractIT {
 
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = PORT;
-        RestAssured.basePath = "/api/v1";
+        RestAssured.basePath = Application.CONTEXT_PATH;
     }
 
     @BeforeAll
