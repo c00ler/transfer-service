@@ -41,6 +41,8 @@ public final class TransactionService {
     public void makeTransfer(
             final UUID transferId, final Account sourceAccount, final Account targetAccount, final Long amount) {
         Validate.isTrue(NumberUtils.isGreaterThan(amount, 0L), "amount must be positive");
+        Validate.isTrue(!sourceAccount.getId().equals(targetAccount.getId()),
+                "source and target accounts must be different");
 
         var transfer = Transfer.newTransfer(transferId, sourceAccount, targetAccount, amount);
         // Persist transfer to the database, to we can recover it in case of any failures

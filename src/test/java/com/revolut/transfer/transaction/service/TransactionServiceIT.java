@@ -84,6 +84,15 @@ class TransactionServiceIT extends AbstractIT {
         }
 
         @Test
+        void shouldThrowIfSourceAndTargetIsSameAccount() {
+            var account = Account.of(UUID.randomUUID());
+
+            assertThatThrownBy(() -> underTest.makeTransfer(UUID.randomUUID(), account, account, 100_00L))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("source and target accounts must be different");
+        }
+
+        @Test
         void shouldThrowAndSetInsufficientFundsState() {
             var sourceAccount = accountService.createAccount();
             var targetAccount = accountService.createAccount();
