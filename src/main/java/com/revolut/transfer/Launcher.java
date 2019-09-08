@@ -12,8 +12,8 @@ public final class Launcher {
         var dataSource = JdbcConnectionPool.create("jdbc:h2:mem:revolut", "sa", "");
         FlywayUtils.migrate(dataSource);
 
-        // TODO: Make port configurable
-        var app = new Application(dataSource, 8080);
+        var port = Integer.parseInt(System.getProperty("server.port", "7000"));
+        var app = new Application(dataSource, port);
         app.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(app::stop, "ShutdownHook"));
