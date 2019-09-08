@@ -9,6 +9,7 @@ public final class Account {
 
     UUID id;
 
+    // For simplicity all amounts are in cents
     Long balance;
 
     public static Account of(final UUID id) {

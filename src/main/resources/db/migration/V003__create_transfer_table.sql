@@ -2,13 +2,13 @@
 -- needed to recover transactions in case of any failures during the transfer.
 CREATE TABLE transfer
 (
-    id                    UUID                                       NOT NULL,
-    source_account_id     UUID                                       NOT NULL,
-    target_account_id     UUID                                       NOT NULL,
-    debit_transaction_id  UUID                                       NOT NULL,
-    credit_transaction_id UUID                                       NOT NULL,
-    amount                BIGINT                                     NOT NULL,
-    state                 ENUM('NEW', 'SOURCE_CHARGED', 'COMPLETED') NOT NULL,
+    id                    UUID                                                             NOT NULL,
+    source_account_id     UUID                                                             NOT NULL,
+    target_account_id     UUID                                                             NOT NULL,
+    debit_transaction_id  UUID                                                             NOT NULL,
+    credit_transaction_id UUID                                                             NOT NULL,
+    amount                BIGINT                                                           NOT NULL,
+    state                 ENUM('NEW', 'SOURCE_CHARGED', 'INSUFFICIENT_FUNDS', 'COMPLETED') NOT NULL,
 
     PRIMARY KEY (id),
     CONSTRAINT fk_transfer_source_account_id FOREIGN KEY (source_account_id) REFERENCES account (id),

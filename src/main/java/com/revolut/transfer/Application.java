@@ -8,6 +8,7 @@ import com.revolut.transfer.account.controller.CreateAccountHandler;
 import com.revolut.transfer.account.controller.GetAccountHandler;
 import com.revolut.transfer.account.repository.AccountRepository;
 import com.revolut.transfer.account.service.AccountService;
+import com.revolut.transfer.exception.InsufficientFundsException;
 import com.revolut.transfer.exception.NotFoundException;
 import com.revolut.transfer.transaction.controller.CreateCreditTransactionHandler;
 import com.revolut.transfer.transaction.controller.CreateTransferHandler;
@@ -49,6 +50,7 @@ public final class Application {
         });
 
         app.exception(NotFoundException.class, new NotFoundException.Handler());
+        app.exception(InsufficientFundsException.class, new InsufficientFundsException.Handler());
 
         // Create and wire all the dependencies.
         var accountRepository = new AccountRepository(jooq);

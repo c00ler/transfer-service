@@ -1,6 +1,7 @@
 package com.revolut.transfer.transaction.service;
 
 import com.revolut.transfer.account.model.Account;
+import com.revolut.transfer.exception.InsufficientFundsException;
 import com.revolut.transfer.transaction.model.Transaction;
 import com.revolut.transfer.transaction.model.Transfer;
 import com.revolut.transfer.transaction.model.TransferState;
@@ -56,11 +57,18 @@ public final class TransactionService {
     private void makeDebitTransaction(final Transfer transfer) {
         var debitTransaction = new Transaction.Debit(
                 transfer.getDebitTransactionId(), transfer.getSourceAccountId(), -1 * transfer.getAmount());
-        transactionRepository.createDebitTransaction(debitTransaction);
-        // Update state in the database. If there will be any failure it can be retried in the background.
-        // All operations are idempotent, because transaction ids are generated and stored together
-        // with transfer
-        transactionRepository.updateTransferState(transfer.getId(), TransferState.SOURCE_CHARGED);
+        try {
+            transactionRepository.createDebitTransaction(debitTransaction);
+            // Update state in the database. If there will be any failure it can be retried in the background.
+            // All operations are idempotent, because transaction ids are generated and stored together
+            // with transfer
+            transactionRepository.updateTransferState(transfer.getId(), TransferState.SOURCE_CHARGED);
+        } catch (InsufficientFundsException e) {
+            // Transfer is considered failed and do not need to be recovered
+            transactionRepository.updateTransferState(transfer.getId(), TransferState.INSUFFICIENT_FUNDS);
+
+            throw e;
+        }
     }
 
     private void makeCreditTransaction(final Transfer transfer) {

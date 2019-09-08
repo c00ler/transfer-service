@@ -73,7 +73,7 @@ public final class TransactionRepository {
             // Lock account in the database, so there is only one debit transaction at a time
             lockAccount(transactionCtx, accountId);
             var currentBalance = getBalance(transactionCtx, accountId);
-            if (debitTransaction.getAmount() > currentBalance) {
+            if (Math.abs(debitTransaction.getAmount()) > currentBalance) {
                 throw new InsufficientFundsException(
                         String.format("account [accountId=%s] doesn't have enough funds to complete transaction",
                                 accountId));
