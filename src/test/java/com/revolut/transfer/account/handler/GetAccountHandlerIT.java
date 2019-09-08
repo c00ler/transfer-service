@@ -14,6 +14,7 @@ import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
 
 /**
@@ -34,6 +35,17 @@ class GetAccountHandlerIT extends AbstractIT {
                 .statusCode(HttpStatus.NOT_FOUND_404)
                 .body("status", equalTo(404))
                 .body("title", equalTo("Not Found"));
+    }
+
+    @Test
+    void shouldReturn400IfAccountIdIsNotUUID() {
+        given().accept(ContentType.JSON)
+                .get("accounts/{id}", "foobar")
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.BAD_REQUEST_400)
+                .body("status", equalTo(400))
+                .body("title", containsStringIgnoringCase("is not a valid uuid"));
     }
 
     @Test

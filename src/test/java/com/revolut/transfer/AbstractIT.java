@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 
+/**
+ * Base class for all integration tests. It ensures that database is created, all migrations are applied and
+ * application is started/stopped.
+ */
 public abstract class AbstractIT {
 
     private static final DataSource DATA_SOURCE = JdbcConnectionPool.create("jdbc:h2:mem:revolut", "sa", "");

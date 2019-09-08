@@ -8,6 +8,8 @@ import com.revolut.transfer.account.handler.GetAccountHandler;
 import com.revolut.transfer.account.repository.AccountRepository;
 import com.revolut.transfer.account.service.AccountService;
 import com.revolut.transfer.exception.NotFoundException;
+import com.revolut.transfer.transaction.handler.CreateCreditTransactionHandler;
+import com.revolut.transfer.transaction.repository.TransactionRepository;
 import io.javalin.Javalin;
 import io.javalin.core.validation.JavalinValidation;
 import io.javalin.plugin.json.JavalinJackson;
@@ -43,10 +45,12 @@ final class Application {
 
         app.exception(NotFoundException.class, new NotFoundException.Handler());
 
-        var accountService = new AccountService(new AccountRepository(jooq));
+        var accountService = new AccountService(new AccountRepository(jooq), new TransactionRepository(jooq));
 
         app.post("/accounts", new CreateAccountHandler(accountService));
         app.get("/accounts/:id", new GetAccountHandler(accountService));
+
+        app.post("/accounts/:id/credit-transactions", new CreateCreditTransactionHandler(accountService));
 
         app.start(port);
     }
