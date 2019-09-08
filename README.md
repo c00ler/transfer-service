@@ -86,3 +86,124 @@ Start the container using the following command:
 ```shell script
 docker run --rm -it -p 7000:7000 transfer-service:latest
 ```
+
+## Endpoints
+
+There is an [e2e test](https://github.com/c00ler/transfer-service/blob/master/src/test/java/com/revolut/transfer/EndToEndTestScenarioIT.java) 
+that shows the whole flow.
+
+All provided examples are using [HTTPie](https://httpie.org/) for making calls.
+
+### Create a new account
+
+As soon as application is using in-memory database, accounts for testing have to be first created. To created a new account
+the following command can be used:
+
+```shell script
+http --verbose POST :7000/api/v1/accounts
+``` 
+
+The output of the command should be similar to the following:
+
+```shell script
+HTTP/1.1 201 Created
+Content-Length: 0
+Content-Type: application/json
+Date: Sun, 08 Sep 2019 20:41:57 GMT
+Location: /api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62
+Server: Javalin
+```
+
+`Location` header in the response contains an ID of a newly created account.
+
+### Get account information
+
+Information about an account can be obtained using the following command:
+
+```shell script
+http --verbose :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62
+```
+
+The output of the command should be similar to the following:
+
+```shell script
+HTTP/1.1 200 OK
+Content-Length: 57
+Content-Type: application/json
+Date: Sun, 08 Sep 2019 20:47:55 GMT
+Server: Javalin
+
+{
+    "balance": 0,
+    "id": "ad1604f7-5f1b-4127-ac45-24acd303ee62"
+}
+```
+
+Newly created accounts always have a `0` balance.
+
+### Top-up account balance
+
+Account balance can be topped-up by creating a credit transaction to it:
+
+```shell script
+http --verbose POST :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62/credit-transactions id=e49cec55-90de-4076-8f8e-98a6a43ad0a5 amount:=20000
+```
+
+Request body should be a JSON document with the following properties:
+- `id` - id of the credit transaction. It is used for idempotency. It should be a **new random UUID** every time.
+- `amount` - amount to credit in **cents**.
+
+The output of the command should be similar to the following:
+
+```shell script
+HTTP/1.1 200 OK
+Content-Length: 0
+Content-Type: application/json
+Date: Sun, 08 Sep 2019 20:53:50 GMT
+Server: Javalin
+```
+
+### Transfer money between accounts
+
+To transfer money between two previously created accounts the following command can be used:
+
+```shell script
+http --verbose POST :7000/api/v1/transfers id=aa8050b2-8fb2-4854-ba98-61278fb5e95a source_account_id=ad1604f7-5f1b-4127-ac45-24acd303ee62 target_account_id=d12d9425-b921-4108-873f-09afeaebf072 amount:=10000
+```
+
+Request body should be a JSON document with the following properties:
+- `id` - id of the transfer. It is used for idempotency. It should be a **new random UUID** every time.
+- `source_account_id` - id of the source account. It will be debited.
+- `target_account_id` - id of the target account. It will be credited.
+- `amount` - amount to transfer in **cents**.
+
+The output of the command should be similar to the following:
+
+```shell script
+HTTP/1.1 200 OK
+Content-Length: 0
+Content-Type: application/json
+Date: Sun, 08 Sep 2019 21:04:21 GMT
+Server: Javalin
+```
+
+After a transfer is completed, new balances can be observed by querying the account information endpoint:
+
+```shell script
+http --verbose :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62
+``` 
+
+The output shows a new balance of a source account:
+
+```shell script
+HTTP/1.1 200 OK
+Content-Length: 61
+Content-Type: application/json
+Date: Sun, 08 Sep 2019 21:13:32 GMT
+Server: Javalin
+
+{
+    "balance": 10000,
+    "id": "ad1604f7-5f1b-4127-ac45-24acd303ee62"
+}
+```
