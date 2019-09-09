@@ -167,11 +167,6 @@ Account balance can be topped-up by creating a credit transaction to it:
 
 ```shell script
 http --verbose POST :7000/api/v1/accounts/09bba65c-763d-4fe4-b687-f4aee07c88c2/credit-transactions id=e49cec55-90de-4076-8f8e-98a6a43ad0a5 amount:=20000
-
-{
-    "amount": 20000,
-    "id": "e49cec55-90de-4076-8f8e-98a6a43ad0a5"
-}
 ```
 
 The output of the command should be similar to the following:
@@ -200,13 +195,6 @@ To transfer money between two previously created accounts the following command 
 
 ```shell script
 http --verbose POST :7000/api/v1/transfers id=aa8050b2-8fb2-4854-ba98-61278fb5e95a source_account_id=09bba65c-763d-4fe4-b687-f4aee07c88c2 target_account_id=b838bf5a-7277-4874-baae-a87dd4868a0b amount:=10000
-
-{
-    "amount": 10000,
-    "id": "aa8050b2-8fb2-4854-ba98-61278fb5e95a",
-    "source_account_id": "09bba65c-763d-4fe4-b687-f4aee07c88c2",
-    "target_account_id": "b838bf5a-7277-4874-baae-a87dd4868a0b"
-}
 ```
 
 The output of the command should be similar to the following:
