@@ -54,6 +54,9 @@ public final class TransactionService {
         makeDebitTransaction(transfer);
         LOG.info("Account [accountId={}] was debited [amount={}]", sourceAccount.getId(), amount);
 
+        // It is possible to perform debit and credit transactions inside one database transaction. Decoupling
+        // them on other hand gives a possibility to store accounts and their transactions on different shards
+        // for example.
         makeCreditTransaction(transfer);
         LOG.info("Account [accountId={}] was credited [amount={}]", targetAccount.getId(), amount);
     }
@@ -65,7 +68,7 @@ public final class TransactionService {
             transactionRepository.createDebitTransaction(debitTransaction);
             // Update state in the database. If there will be any failure it can be retried in the background.
             // All operations are idempotent, because transaction ids are generated and stored together
-            // with transfer
+            // with the transfer
             transactionRepository.updateTransferState(transfer.getId(), TransferState.SOURCE_CHARGED);
         } catch (InsufficientFundsException e) {
             // Transfer is considered failed and do not need to be recovered
