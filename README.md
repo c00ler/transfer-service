@@ -96,6 +96,12 @@ All provided examples are using [HTTPie](https://httpie.org/) for making calls.
 
 ### Create a new account
 
+Request: `POST /api/v1/accounts`
+
+Request body: `No`
+
+Example:
+
 As soon as application is using in-memory database, accounts for testing have to be first created. To created a new account
 the following command can be used:
 
@@ -110,7 +116,7 @@ HTTP/1.1 201 Created
 Content-Length: 0
 Content-Type: application/json
 Date: Sun, 08 Sep 2019 20:41:57 GMT
-Location: /api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62
+Location: /api/v1/accounts/09bba65c-763d-4fe4-b687-f4aee07c88c2
 Server: Javalin
 ```
 
@@ -118,10 +124,16 @@ Server: Javalin
 
 ### Get account information
 
+Request: `GET /api/v1/accounts/:account_id`
+
+Request body: `No`
+
+Example:
+
 Information about an account can be obtained using the following command:
 
 ```shell script
-http --verbose :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62
+http --verbose GET :7000/api/v1/accounts/09bba65c-763d-4fe4-b687-f4aee07c88c2
 ```
 
 The output of the command should be similar to the following:
@@ -135,7 +147,7 @@ Server: Javalin
 
 {
     "balance": 0,
-    "id": "ad1604f7-5f1b-4127-ac45-24acd303ee62"
+    "id": "09bba65c-763d-4fe4-b687-f4aee07c88c2"
 }
 ```
 
@@ -143,15 +155,24 @@ Newly created accounts always have a `0` balance.
 
 ### Top-up account balance
 
+Request: `POST /api/v1/accounts/:account_id/credit-transactions`
+
+Request body: JSON document with the following properties:
+- `id` - id of the credit transaction. It is used for idempotency. It should be a **new random UUID** every time.
+- `amount` - amount to credit in **cents**.
+
+Example:
+
 Account balance can be topped-up by creating a credit transaction to it:
 
 ```shell script
-http --verbose POST :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62/credit-transactions id=e49cec55-90de-4076-8f8e-98a6a43ad0a5 amount:=20000
-```
+http --verbose POST :7000/api/v1/accounts/09bba65c-763d-4fe4-b687-f4aee07c88c2/credit-transactions id=e49cec55-90de-4076-8f8e-98a6a43ad0a5 amount:=20000
 
-Request body should be a JSON document with the following properties:
-- `id` - id of the credit transaction. It is used for idempotency. It should be a **new random UUID** every time.
-- `amount` - amount to credit in **cents**.
+{
+    "amount": 20000,
+    "id": "e49cec55-90de-4076-8f8e-98a6a43ad0a5"
+}
+```
 
 The output of the command should be similar to the following:
 
@@ -165,17 +186,28 @@ Server: Javalin
 
 ### Transfer money between accounts
 
-To transfer money between two previously created accounts the following command can be used:
+Request: `POST /api/v1/transfers`
 
-```shell script
-http --verbose POST :7000/api/v1/transfers id=aa8050b2-8fb2-4854-ba98-61278fb5e95a source_account_id=ad1604f7-5f1b-4127-ac45-24acd303ee62 target_account_id=d12d9425-b921-4108-873f-09afeaebf072 amount:=10000
-```
-
-Request body should be a JSON document with the following properties:
+Request body: JSON document with the following properties:
 - `id` - id of the transfer. It is used for idempotency. It should be a **new random UUID** every time.
 - `source_account_id` - id of the source account. It will be debited.
 - `target_account_id` - id of the target account. It will be credited.
 - `amount` - amount to transfer in **cents**.
+
+Example:
+
+To transfer money between two previously created accounts the following command can be used:
+
+```shell script
+http --verbose POST :7000/api/v1/transfers id=aa8050b2-8fb2-4854-ba98-61278fb5e95a source_account_id=09bba65c-763d-4fe4-b687-f4aee07c88c2 target_account_id=b838bf5a-7277-4874-baae-a87dd4868a0b amount:=10000
+
+{
+    "amount": 10000,
+    "id": "aa8050b2-8fb2-4854-ba98-61278fb5e95a",
+    "source_account_id": "09bba65c-763d-4fe4-b687-f4aee07c88c2",
+    "target_account_id": "b838bf5a-7277-4874-baae-a87dd4868a0b"
+}
+```
 
 The output of the command should be similar to the following:
 
@@ -190,7 +222,7 @@ Server: Javalin
 After a successful transfer, new balances can be observed by querying the account information endpoint:
 
 ```shell script
-http --verbose :7000/api/v1/accounts/ad1604f7-5f1b-4127-ac45-24acd303ee62
+http --verbose GET :7000/api/v1/accounts/09bba65c-763d-4fe4-b687-f4aee07c88c2
 ``` 
 
 The output shows a new balance of a source account:
@@ -204,6 +236,6 @@ Server: Javalin
 
 {
     "balance": 10000,
-    "id": "ad1604f7-5f1b-4127-ac45-24acd303ee62"
+    "id": "09bba65c-763d-4fe4-b687-f4aee07c88c2"
 }
 ```

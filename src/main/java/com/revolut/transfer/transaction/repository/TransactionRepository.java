@@ -57,7 +57,7 @@ public final class TransactionRepository {
             var transactionCtx = DSL.using(c);
 
             // I choose not to lock an account in the database here. The risk of not locking an account is that
-            // in some rare cases credit transaction may fail due insufficient funds. Taking into the account that
+            // in some rare cases debit transaction may fail due insufficient funds. Taking into the account that
             // likelihood of such conditions is very low, I decided to optimize for performance here.
 
             persist(transactionCtx, creditTransaction);
