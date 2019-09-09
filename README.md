@@ -157,7 +157,7 @@ Newly created accounts always have a `0` balance.
 
 Request: `POST /api/v1/accounts/:account_id/credit-transactions`
 
-Request body: JSON document with the following properties:
+Request body: JSON document with the following properties
 - `id` - id of the credit transaction. It is used for idempotency. It should be a **new random UUID** every time.
 - `amount` - amount to credit in **cents**.
 
@@ -188,7 +188,7 @@ Server: Javalin
 
 Request: `POST /api/v1/transfers`
 
-Request body: JSON document with the following properties:
+Request body: JSON document with the following properties
 - `id` - id of the transfer. It is used for idempotency. It should be a **new random UUID** every time.
 - `source_account_id` - id of the source account. It will be debited.
 - `target_account_id` - id of the target account. It will be credited.
