@@ -25,7 +25,7 @@
         <javalin.version>3.4.1</javalin.version>
         <log4j.version>2.12.1</log4j.version>
         <problem.version>0.23.0</problem.version>
-        <h2.version>1.4.199</h2.version>
+        <h2.version>2.0.206</h2.version>
         <flyway.version>6.0.1</flyway.version>
         <jooq.version>3.12.1</jooq.version>
 
